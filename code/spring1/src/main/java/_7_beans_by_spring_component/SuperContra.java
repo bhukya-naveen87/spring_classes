@@ -1,8 +1,10 @@
 package _7_beans_by_spring_component;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
+@Qualifier("supercontra_qualifier")
 public class SuperContra implements GamingConsole {
 	public void up() {
 		System.out.println("Up");

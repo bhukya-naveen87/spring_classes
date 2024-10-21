@@ -1,8 +1,10 @@
 package _7_beans_by_spring_component;
 
-// import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
 
-// @Component
+@Component
+@Primary
 public class MarioGame implements GamingConsole {
 	public void up() {
 		System.out.println("Up");
