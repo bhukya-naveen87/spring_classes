@@ -356,7 +356,7 @@
         - ###### **@Autowired:**
             - @Autowired(required = false) will help to avoid the **NoUniqueBeanDefinitionException** if the bean is not available during Auto
             - **```import org.springframework.beans.factory.annotation.Autowired```**
-            - Marks a constructor, field, setter method, or config method as to be autowired by Spring's dependency injection facilities. This is an alternative to the JSR-330 jakarta.inject.Inject annotation, adding required-vs-optional semantics.
+            - Marks a constructor, field, setter method, or config method has to be autowired by Spring's dependency injection facilities. This is an alternative to the JSR-330 jakarta.inject.Inject annotation, adding required-vs-optional semantics.
             - Using @Autowiring we can do dependency injection by 3 ways:
             - **Autowired Constructors**
                 - Only **one constructor** of any given **bean class** may declare this annotation with the required attribute set to true, indicating the constructor to be autowired when used as a Spring bean. 
@@ -950,6 +950,25 @@
     ```
 
   - **Setter Beans used are _8_dependency_injection.Dependency_1@67f639d3 && _8_dependency_injection.Dependency_2@6253c26** is the output.
+
+
+#### Springboot
+- ##### First API
+    ```
+    @RestController
+    public class _0_First_API {
+            @RequestMapping("/allCourses")
+            public List<Course> retrieveAllCourses(){
+                return Arrays.asList(
+                    new Course(1, "AWS", "gomad"),
+                    new Course(2, "Python", "gomad")
+                );
+            }
+    }
+    ```
+    - End point is http://localhost:8080/allCourses
+- 
+
 
 #### MISC:
 - record:
