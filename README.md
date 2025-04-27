@@ -967,7 +967,124 @@
     }
     ```
     - End point is http://localhost:8080/allCourses
-- 
+- ##### Auto Configuration:
+    - In general, springboot autoconfigure the things for us. But in case if you want to change some things, we can configure them in **application.properties**. 
+    - Example: I want to log at debug level where default level is **info**:
+        ```
+        logging.level.org.springframework=debug
+        ```
+        - It logs debug report:
+         - **Negative matches** which are not auto-configured.
+    - ![Spring Autoconfiguration](image-26.png)
+- ##### Build Faster with Spring Boot DevTools:
+    - ![Spring Boot DevTools](image-27.png)
+    -   Dependency needed:
+        ```
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+        </dependency>
+        ```
+- ##### Get Production Ready with Spring Boot:
+    - ###### Profiles:
+        ![Profiles](image-28.png)
+        - We can managing application configuration using profiles.
+        - Whenever we talk about applications, they have different environments, development environment, a QA environment,
+        a stage environment, a production environment, which need different configuration for the same application for the same code.
+        -  In the **application.properties** file **src/main/resources**,
+            Spring have default configuration.
+        - Now create
+            - application-dev.properties >> logging.level.org.springframework=debug
+            - application-qa.properties >> logging.level.org.springframework=info
+            - application-uat.properties >> logging.level.org.springframework=error
+            - application-prod.properties >> logging.level.org.springframework=trace
+        - In application.properties 
+            - logging.level.org.springframework=debug
+            - spring.profiles.active=prod
+            - Now default logging level is debug but profiles activated is prod which has debugging level of trace, so loggers of trace level will be logged.
+        - Other logging types: trace || debug || info || warning || error || off
+            - If I set log level to **trace**, it logs trace, debug, info, warning and error.
+            - If I set log level to **debug**, it logs debug, info, warning and error.
+    - ###### Configuration properties.
+        ![Configuration properties](image-30.png)
+        - Let's say that in application.properties, I have details like:
+            -  user-admin.username=dev
+            -  user-admin.password=dev
+            -  user-admin.permisssion=viewer
+        - We can access them by using **@ConfigurationProperties** annotation
+            ```
+            package com.example.springboot1._2_config_properties;
+
+            import org.springframework.boot.context.properties.ConfigurationProperties;
+            import org.springframework.stereotype.Component;
+
+            @ConfigurationProperties(prefix = "user-admin")
+            @Component
+            public class UserAdmin {
+                private String username;
+                private String password;
+                private String permisssion;
+
+                public String getUsername() {
+                    return username;
+                }
+                public void setUsername(String username) {
+                    this.username = username;
+                }
+                public String getPassword() {
+                    return password;
+                }
+                public void setPassword(String password) {
+                    this.password = password;
+                }
+                public String getPermisssion() {
+                    return permisssion;
+                }
+                public void setPermisssion(String permisssion) {
+                    this.permisssion = permisssion;
+                }
+                @Override
+                public String toString() {
+                    return "UserAdmin [username=" + username + ", password=" + password + ", permisssion=" + permisssion + "]";
+                }    
+            }
+            ```
+        - In prefix, we have to mention the **prefix**, and variables used in the application.properties file should match with variables used in this component.
+        - **@Component** should be used to create an instance by Springboot.
+        - Creating route to access those configuration:
+            ```
+            package com.example.springboot1._2_config_properties;
+
+            import org.springframework.beans.factory.annotation.Autowired;
+            import org.springframework.web.bind.annotation.RequestMapping;
+            import org.springframework.web.bind.annotation.RestController;
+
+            @RestController
+            public class UserAdminController {
+
+                @Autowired
+                private UserAdmin userAdmin;
+                
+                @RequestMapping("/user-admin")
+                public UserAdmin userAdmin(){
+                    return userAdmin;
+                }
+            }
+            ```
+        - http://localhost:8080/user-admin returns
+            ```
+            {
+                "username": "dev",
+                "password": "dev",
+                "permisssion": "viewer"
+            }
+            ```
+    - ###### Embedded Servers:
+        - ![Embedded Servers](image-29.png)
+
+
+
+
 
 
 #### MISC:

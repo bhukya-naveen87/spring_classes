@@ -12,7 +12,8 @@ public class _0_First_API {
         public List<Course> retrieveAllCourses(){
             return Arrays.asList(
                 new Course(1, "AWS", "gomad"),
-                new Course(2, "Python", "gomad")
+                new Course(2, "Python", "gomad"),
+                new Course(2, "JS", "gomad")
             );
         }
 }
