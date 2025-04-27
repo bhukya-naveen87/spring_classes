@@ -1081,7 +1081,28 @@
             ```
     - ###### Embedded Servers:
         - ![Embedded Servers](image-29.png)
+        - Previously, we had to install Java, Tomcat but now Springboot is giving embedded tomcat server. Now jar file will have tomcat server.
+        - Run project as Maven with goal **clean install** and it runs maven build and now it generates a snapshot and gives the path like **C:\Users\EDIUS X\.m2\repository\com\example\Spring2\0.0.1-SNAPSHOT\Spring2-0.0.1-SNAPSHOT.jar**, 
+        - Open the file path **C:\Users\EDIUS X\.m2\repository\com\example\Spring2\0.0.1-SNAPSHOT**
+        - Now run 
+            ```
+            java -jar Spring2-0.0.1-SNAPSHOT.jar
+            ```
+            ![Embedded Server](image-31.png)
+        - 
+        ```
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+            </dependency>
 
+                 <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                    <version>3.3.4</version>
+                    <scope>compile</scope>
+                </dependency>
+        ```
 
 
 
