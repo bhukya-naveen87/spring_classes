@@ -1103,9 +1103,157 @@
                     <scope>compile</scope>
                 </dependency>
         ```
-
-
-
+    - ###### Actuators:
+        -  ![Actuator](image-32.png)
+        -  ```
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-actuator</artifactId>
+            </dependency>
+            ```
+        -  Url is **http://localhost:8080/actuator** and it returns:
+            ```
+            {
+                "_links": {
+                    "self": {
+                        "href": "http://localhost:8080/actuator",
+                        "templated": false
+                    },
+                    "health": {
+                        "href": "http://localhost:8080/actuator/health",
+                        "templated": false
+                    },
+                    "health-path": {
+                        "href": "http://localhost:8080/actuator/health/{*path}",
+                        "templated": true
+                    }
+                }
+            }
+            ```
+        - Adding ```management.endpoints.web.exposure.include=*``` in **application.properties**, actuator return many links like beans, health, metrics but it consumes more CPU & memory. So explicitly enable for health and metrics :
+            ```
+            {
+                "_links": {
+                    "self": {
+                        "href": "http://localhost:8080/actuator",
+                        "templated": false
+                    },
+                    "beans": {
+                        "href": "http://localhost:8080/actuator/beans",
+                        "templated": false
+                    },
+                    "caches-cache": {
+                        "href": "http://localhost:8080/actuator/caches/{cache}",
+                        "templated": true
+                    },
+                    "caches": {
+                        "href": "http://localhost:8080/actuator/caches",
+                        "templated": false
+                    },
+                    "health-path": {
+                        "href": "http://localhost:8080/actuator/health/{*path}",
+                        "templated": true
+                    },
+                    "health": {
+                        "href": "http://localhost:8080/actuator/health",
+                        "templated": false
+                    },
+                    "info": {
+                        "href": "http://localhost:8080/actuator/info",
+                        "templated": false
+                    },
+                    "conditions": {
+                        "href": "http://localhost:8080/actuator/conditions",
+                        "templated": false
+                    },
+                    "configprops": {
+                        "href": "http://localhost:8080/actuator/configprops",
+                        "templated": false
+                    },
+                    "configprops-prefix": {
+                        "href": "http://localhost:8080/actuator/configprops/{prefix}",
+                        "templated": true
+                    },
+                    "env": {
+                        "href": "http://localhost:8080/actuator/env",
+                        "templated": false
+                    },
+                    "env-toMatch": {
+                        "href": "http://localhost:8080/actuator/env/{toMatch}",
+                        "templated": true
+                    },
+                    "loggers": {
+                        "href": "http://localhost:8080/actuator/loggers",
+                        "templated": false
+                    },
+                    "loggers-name": {
+                        "href": "http://localhost:8080/actuator/loggers/{name}",
+                        "templated": true
+                    },
+                    "heapdump": {
+                        "href": "http://localhost:8080/actuator/heapdump",
+                        "templated": false
+                    },
+                    "threaddump": {
+                        "href": "http://localhost:8080/actuator/threaddump",
+                        "templated": false
+                    },
+                    "metrics-requiredMetricName": {
+                        "href": "http://localhost:8080/actuator/metrics/{requiredMetricName}",
+                        "templated": true
+                    },
+                    "metrics": {
+                        "href": "http://localhost:8080/actuator/metrics",
+                        "templated": false
+                    },
+                    "sbom": {
+                        "href": "http://localhost:8080/actuator/sbom",
+                        "templated": false
+                    },
+                    "sbom-id": {
+                        "href": "http://localhost:8080/actuator/sbom/{id}",
+                        "templated": true
+                    },
+                    "scheduledtasks": {
+                        "href": "http://localhost:8080/actuator/scheduledtasks",
+                        "templated": false
+                    },
+                    "mappings": {
+                        "href": "http://localhost:8080/actuator/mappings",
+                        "templated": false
+                    }
+                }
+            }
+            ```
+        - **management.endpoints.web.exposure.include=health,metrics** returns:
+            ```
+            {
+                "_links": {
+                    "self": {
+                        "href": "http://localhost:8080/actuator",
+                        "templated": false
+                    },
+                    "health": {
+                        "href": "http://localhost:8080/actuator/health",
+                        "templated": false
+                    },
+                    "health-path": {
+                        "href": "http://localhost:8080/actuator/health/{*path}",
+                        "templated": true
+                    },
+                    "metrics-requiredMetricName": {
+                        "href": "http://localhost:8080/actuator/metrics/{requiredMetricName}",
+                        "templated": true
+                    },
+                    "metrics": {
+                        "href": "http://localhost:8080/actuator/metrics",
+                        "templated": false
+                    }
+                }
+            }
+            ```
+    - ###### Understanding Spring Boot vs Spring vs Spring MVC:
+        - ![Understanding Spring Boot vs Spring vs Spring MVC](image-33.png)
 
 
 #### MISC:
