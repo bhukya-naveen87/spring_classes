@@ -1255,6 +1255,214 @@
     - ###### Understanding Spring Boot vs Spring vs Spring MVC:
         - ![Understanding Spring Boot vs Spring vs Spring MVC](image-33.png)
 
+- ##### Getting Started with JPA and Hibernate with Spring and Spring Boot
+    - ###### Getting Started with JPA and Hibernate - Goals:
+        - ![Getting Started with JPA and Hibernate - Goals](image-34.png)
+        - ![Learning JPA & Hibernate - Approach](image-35.png)
+        - **H2** --> **Spring JDBC** --> **JPA & Hibernate** --> **Spring Data JPA**
+    - ###### Setting up New Spring Boot Project for JPA and Hibernate:
+        - Dependencies needed are:
+            - Spring Web: 
+                - Build web, including RESTful, applications using Spring MVC. Uses Apache Tomcat as the default embedded container.
+            - H2 Database [SQL]:
+                - Provides a fast in-memory database that supports JDBC API and R2DBC access, with a small (2mb) footprint. Supports embedded and server modes as well as a browser based console application.
+            - Spring Data JDBC [SQL]:
+                - Persist data in SQL stores with plain JDBC using Spring Data.
+            - Spring Data JPA [SQL]:
+                - Persist data in SQL stores with Java Persistence API using Spring Data and Hibernate.
+    - ###### Launching up H2 Console and Creating Course Table in H2:
+        - ![H2 Database](image-40.png)
+        - H2 is an in-built memory database in Spring. 
+        - After having depencencies, In application.properties we have to enable the console by 
+            - **spring.h2.console.enabled=true**
+        - H2 console can be accessed by **http://localhost:8080/h2-console**.
+            ![H2 Console](image-36.png)
+        - On server start, a random url gets created **jdbc:h2:mem:ccb1cc6e-1fe8-4607-93fb-cbebf9d4580b**. Now in H2 console, copy this in JDBC URL and click on connect to get below screen.
+        - ![H2 Database](image-37.png)
+        - Instead of getting random url always, we can make it static in application.properties by setting **spring.datasource.url=jdbc:h2:mem:gomaddb** 
+        - ![gomaddb](image-38.png)
+        - Creation of table:
+            1. H2 console always picks-up **schema.sql** file in resources folder.
+            2. Create **schema.sql** and give queries as follows:
+                ```
+                create table course
+                (
+                    id bigint not null,
+                    name varchar(255) not null,
+                    author varchar(255) not null,
+                    primary key(id)
+                );
+                ```
+            3. Restart the server. It creates a table named **course** in H2 database.
+            ![Course table](image-39.png)
+            4. Run queries like **select * from course** etc.
+        - ![JDBC to Spring JDBC to JPA to Spring Data JPA](image-41.png)
+    - ###### Getting Started with Spring JDBC:
+        - **Inserting Hardcoded Data using Spring JDBC**
+            - Here we write static query to insert into H2. JDBC Templtate is used to insert querying.
+                ```
+                package com.gomad.jpa_and_hibernate.CourseJDBC;
+
+                import org.springframework.beans.factory.annotation.Autowired;
+                import org.springframework.jdbc.core.JdbcTemplate;
+                import org.springframework.stereotype.Repository;
+                @Repository
+                public class CourseJDBCRepo {
+
+                    @Autowired
+                    private JdbcTemplate jdbcTemplate;
+
+                    private static String INSERT_QUERY = """
+                            insert into course(id, name, author)
+                            values(1, 'Learn AWS', 'Gomad')
+                            """;
+                    
+                    public void insert(){
+                        jdbcTemplate.update(INSERT_QUERY);
+                    }
+                }
+                ```
+            - By default, above code can't be run at runtime. This can be done by using **CommandLineRunner** and this can be done by creating a class which implements CommandLineRunner and now a method **run** is used to execute queries at run time.
+                ```
+                package com.gomad.jpa_and_hibernate.CourseJDBC;
+                import org.springframework.beans.factory.annotation.Autowired;
+                import org.springframework.boot.CommandLineRunner;
+                import org.springframework.stereotype.Component;
+                @Component
+                public class CourseJDBCCommandLineRunner implements CommandLineRunner {
+
+                    @Autowired
+                    private CourseJDBCRepo courseJDBCRepo;
+
+                    @Override
+                    public void run(String... args) throws Exception {
+                        courseJDBCRepo.insert();
+                    }
+                }
+                ```
+        - **Inserting and Deleting Data using Spring JDBC**
+            - Here we have to create a class called Course.java with varibles id, name and author which are columns in course table.
+                ```
+                package com.gomad.jpa_and_hibernate.CourseJDBC;
+                public class Course {
+                    private long id;
+                    private String name;
+                    private String author;
+
+                    public Course() {
+                    }
+                    
+                    public Course(long id, String name, String author) {
+                        this.id = id;
+                        this.name = name;
+                        this.author = author;
+                    }
+
+                    public long getId() {
+                        return id;
+                    }
+
+                    public String getName() {
+                        return name;
+                    }
+
+                    public String getAuthor() {
+                        return author;
+                    }
+
+                    public void setId(long id) {
+                        this.id = id;
+                    }
+
+                    public void setName(String name) {
+                        this.name = name;
+                    }
+
+                    public void setAuthor(String author) {
+                        this.author = author;
+                    }
+
+                    @Override
+                    public String toString() {
+                        return "Course [id=" + id + ", name=" + name + ", author=" + author + "]";
+                    }
+
+                }
+
+                ```
+            - In CourseJDBCRepo.java, in INSERT_QUERY values are changed from **values(1, 'Learn AWS', 'Gomad')** to **values(?, ? , ?)**
+
+                ```
+                package com.gomad.jpa_and_hibernate.CourseJDBC;
+
+                import org.springframework.beans.factory.annotation.Autowired;
+                import org.springframework.jdbc.core.JdbcTemplate;
+                import org.springframework.stereotype.Repository;
+
+                @Repository
+                public class CourseJDBCRepo {
+
+                    @Autowired
+                    private JdbcTemplate jdbcTemplate;
+
+                    private static String INSERT_QUERY = """
+                            insert into course(id, name, author)
+                            values(1, 'Learn AWS', 'Gomad')
+                            """;
+
+                    private static String INSERT_QUERY_CLASS = """
+                            insert into course(id, name, author)
+                            values(?, ? , ?)
+                            """;
+                    
+                    public void insertWithClass(Course course){
+                        jdbcTemplate.update(INSERT_QUERY_CLASS, course.getId(), course.getName(), course.getAuthor());
+                    }
+                }
+                ```
+            - Now in **CourseJDBCCommandLineRunner.java**, call that insertWithClass and it insert data into H2 console.
+                ```
+                courseJDBCRepo.insertWithClass(new Course(2, "Learn AZURE", "Gomad"));
+                courseJDBCRepo.insertWithClass(new Course(3, "Learn GCP", "Gomad"));
+                courseJDBCRepo.insertWithClass(new Course(4, "Learn React", "Gomad"));
+                ```
+            - **Deleting** is also done in same way.
+                - In CourseJDBC.java, we write query:
+                    ```
+                    private static String DELETE_QUERY = """
+                            delete from course where id = ?
+                            """;
+                     public void deleteWithID(long id){
+                        jdbcTemplate.update(DELETE_QUERY, id);
+                    }
+                    ```
+                - Now in **CourseJDBCCommandLineRunner.java**, call that deleteWithID and it delete data from H2 console.
+                    ```courseJDBCRepo.deleteWithID(3);
+                    ```
+                
+        - **Querying Data using Spring JDBC**
+            - **Querying** is also done in same way how insertion and deletion are done.
+                - In CourseJDBC.java, we write query:
+                    ```
+                    private static String SELECT_QUERY = """
+                            select * from course where id = ?
+                            """;
+                    
+                    public Course getCourseById(long id){
+                        return jdbcTemplate.queryForObject(SELECT_QUERY, new BeanPropertyRowMapper<>(Course.class), id);
+                    }
+                    ```
+                - When we want a single row, we use **queryForObject** and what it does is to create a bean from the row it got.
+                - Now in **CourseJDBCCommandLineRunner.java**, call that **getCourseById** and it gets data from H2 console and prints on the console.
+                    ```
+                    System.out.println(courseJDBCRepo.getCourseById(1));
+                    System.out.println(courseJDBCRepo.getCourseById(4));
+                    ```
+                    - It prints as follows:
+                        ![SQL Data of id 1 and 4](image-42.png)
+    - ###### Getting Started with JPA & EntityManager:
+        
+
 
 #### MISC:
 - record:
