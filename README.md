@@ -1461,7 +1461,176 @@
                     - It prints as follows:
                         ![SQL Data of id 1 and 4](image-42.png)
     - ###### Getting Started with JPA & EntityManager:
+        - JPA can be used to query data with less code.
+        - **CourseJPA.java**:
+            - Same code is there but on the top of CourseJPA, we have to add **@Entity** annotation which would map the course table.
+            - If class name and table name are same: use **@Entity** else use like **@Entity(name = "Course")**
+            - @Id annotation means it is primary key.
+            - If column name and variable name are same, no need of giving **@Column** annotation else use it like **@Column(name = "Actual_Column_Name")**
+            ```
+            package com.gomad.jpa_and_hibernate.CourseJPA;
+            import jakarta.persistence.Column;
+            import jakarta.persistence.Entity;
+            import jakarta.persistence.Id;
+            // @Entity // if table name and class name are same use this.
+            @Entity(name = "Course")
+            public class CourseJPA {
+
+                @Id // For primary key
+                private long id;
+
+                @Column(name = "name")
+                private String name;
+
+                // @Column(name = "author") but it is not needed.
+                private String author;
+
+                public CourseJPA() {
+                }
+                
+                public CourseJPA(long id, String name, String author) {
+                    this.id = id;
+                    this.name = name;
+                    this.author = author;
+                }
+
+                public long getId() {
+                    return id;
+                }
+
+                public String getName() {
+                    return name;
+                }
+
+                public String getAuthor() {
+                    return author;
+                }
+
+                public void setId(long id) {
+                    this.id = id;
+                }
+
+                public void setName(String name) {
+                    this.name = name;
+                }
+
+                public void setAuthor(String author) {
+                    this.author = author;
+                }
+
+                @Override
+                public String toString() {
+                    return "Course [id=" + id + ", name=" + name + ", author=" + author + "]";
+                }
+            }
+            ```
         
+        - **CourseJPARepo.java**:
+            - Here instead of **JDBCTemplate**, we use **EntityManager** from JPA.
+            - Instead of **AutoWired** we can use **@PersistenceContext** also for this.
+            - Other than select queries, use **@Transactional** on the top of those methods, else error will be throwed.
+            - On class level, adding **@Transactional** is enough instead of adding on every method.
+            ```
+            package com.gomad.jpa_and_hibernate.CourseJPA;
+            import org.springframework.stereotype.Repository;
+
+            import jakarta.persistence.EntityManager;
+            import jakarta.persistence.PersistenceContext;
+            import jakarta.transaction.Transactional;
+
+            @Repository
+            public class CourseJPARepo {
+
+                // @Autowired
+                @PersistenceContext
+                private EntityManager entityManager;
+
+                @Transactional
+                public void insert(CourseJPA courseJpa){
+                    entityManager.merge(courseJpa);
+                }
+
+                @Transactional
+                public void deleteById(long id){
+                    CourseJPA course = entityManager.find(CourseJPA.class, id);
+                    entityManager.remove(course);
+                }
+
+                public CourseJPA getCourseById(long id){
+                    return entityManager.find(CourseJPA.class, id);
+                }
+
+            }
+            ```
+        - **CourseCommandLineInterface.java**
+            ```
+            package com.gomad.jpa_and_hibernate;
+            import org.springframework.beans.factory.annotation.Autowired;
+            import org.springframework.boot.CommandLineRunner;
+            import org.springframework.stereotype.Component;
+            import com.gomad.jpa_and_hibernate.CourseJPA.CourseJPA;
+            import com.gomad.jpa_and_hibernate.CourseJPA.CourseJPARepo;
+
+            @Component
+            public class CourseCommandLineInterface implements CommandLineRunner {
+
+                @Autowired
+                private CourseJPARepo courseJPARepo;
+
+                @Override
+                public void run(String... args) throws Exception {
+
+                    courseJPARepo.insert(new CourseJPA(11, "Learn AWS JPA", "Gomad"));
+                    courseJPARepo.insert(new CourseJPA(12, "Learn AZURE JPA", "Gomad"));
+                    courseJPARepo.insert(new CourseJPA(13, "Learn GCP JPA", "Gomad"));
+                    courseJPARepo.insert(new CourseJPA(14, "Learn React JPA", "Gomad"));
+                    courseJPARepo.deleteById(13);
+                    System.out.println(courseJPARepo.getCourseById(11));
+                    System.out.println(courseJPARepo.getCourseById(14));
+                
+                }
+                
+            }
+
+
+            ```
+            ![Data from JPA](image-43.png)
+
+        - If you want to check queries executing by JPA, add **spring.jpa.show-sql=true** in application.properties.
+            ```
+            // Table creation
+            Hibernate: drop table if exists course cascade 
+            Hibernate: create table course (id bigint not null, author varchar(255), name varchar(255), primary key (id))
+
+            //Insert
+            Hibernate: select cj1_0.id,cj1_0.author,cj1_0.name from course cj1_0 where cj1_0.id=?
+            Hibernate: insert into course (author,name,id) values (?,?,?)
+
+            //Insert
+            Hibernate: select cj1_0.id,cj1_0.author,cj1_0.name from course cj1_0 where cj1_0.id=?
+            Hibernate: insert into course (author,name,id) values (?,?,?)
+
+            //Insert
+            Hibernate: select cj1_0.id,cj1_0.author,cj1_0.name from course cj1_0 where cj1_0.id=?
+            Hibernate: insert into course (author,name,id) values (?,?,?)
+
+            //Insert
+            Hibernate: select cj1_0.id,cj1_0.author,cj1_0.name from course cj1_0 where cj1_0.id=?
+            Hibernate: insert into course (author,name,id) values (?,?,?)
+
+            //Delete
+            Hibernate: select cj1_0.id,cj1_0.author,cj1_0.name from course cj1_0 where cj1_0.id=?
+            Hibernate: delete from course where id=?
+
+            //Select
+            Hibernate: select cj1_0.id,cj1_0.author,cj1_0.name from course cj1_0 where cj1_0.id=?
+            Course [id=11, name=Learn AWS JPA, author=Gomad]
+
+            //Select
+            Hibernate: select cj1_0.id,cj1_0.author,cj1_0.name from course cj1_0 where cj1_0.id=?
+            Course [id=14, name=Learn React JPA, author=Gomad]
+            ```
+
 
 
 #### MISC:
