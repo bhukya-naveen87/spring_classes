@@ -969,6 +969,7 @@
     - End point is http://localhost:8080/allCourses
 - ##### Auto Configuration:
     - In general, springboot autoconfigure the things for us. But in case if you want to change some things, we can configure them in **application.properties**. 
+    - Example1: Default port is 8080 and if I want on 5000, then set **server.port=5000**
     - Example: I want to log at debug level where default level is **info**:
         ```
         logging.level.org.springframework=debug
@@ -1685,6 +1686,88 @@
                 - Build web, including RESTful, applications using Spring MVC. Uses Apache Tomcat as the default embedded container.
             - Spring Boot DevTools:
                 - Provides fast application restarts, LiveReload, and configurations for enhanced development experience.
+    - ###### First Spring MVC Controller, @ResponseBody, @Controller:
+        ```
+        package com.gomad.firstwebapp.firstController;
+
+        import org.springframework.stereotype.Controller;
+        import org.springframework.web.bind.annotation.RequestMapping;
+        import org.springframework.web.bind.annotation.ResponseBody;
+
+        @Controller
+        public class HelloController {
+            
+            @RequestMapping("hello")
+            @ResponseBody
+            public String sayHello() {
+                return "Hello";
+            }
+        }
+        ```
+        - Here **@Controller** is a stereotype type annotation for controller.
+        - @RequestMapping annotation is used to express the end point. Here with "Hello", the url it will make is **http://localhost:5000/hello**.
+        - If **@ResponseBody** annotation is not used, it looks for Hello.jsp view, but so as to send a string we have use **@ResponseBody** annotation.
+        ![hello api](image-44.png)
+    - ###### Enhancing Spring MVC Controller to provide HTML response:
+        - **Sending HTML as String is very cumbersome.**
+        ```
+        @RequestMapping("hello-html-string")
+        @ResponseBody
+        public String sayHelloFromHtmlString() {
+            StringBuffer sb = new StringBuffer();
+            sb.append("<!DOCTYPE html>");
+            sb.append("<html lang=\"en\">");
+            sb.append("<head>");
+            sb.append("<meta charset=\"UTF-8\">");
+            
+            sb.append("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
+            sb.append("<title>Hello from String Html</title>");
+            sb.append("</head>");
+            sb.append("<body>");
+
+            sb.append("<h2>Hello From JSP file</h2>");
+            sb.append("</body>");
+            sb.append("</html>");
+            return sb.toString();
+        }
+        ```
+        ![String Html](image-45.png)
+        - We have to create html file as **JSP [Java Server Pages]** in **/src/main/resources/META-INF/resources/WEB-INF/jsp/**.
+        - Content of **/src/main/resources/META-INF/resources/WEB-INF/jsp/HtmlFromJsp.jsp**:
+        ```
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Hello From JSP </title>
+        </head>
+        <body>
+            <h2>Hello From JSP file</h2>
+        </body>
+        </html>
+        ```
+        - By default Spring takes path upto **/src/main/resources/META-INF/resources** and rest of the path have to be configured in **application.properties**
+            ```
+            spring.mvc.view.prefix=/WEB-INF/jsp/
+            spring.mvc.view.suffix=.jsp
+            ```
+        - To render JSP, we have to add extra dependency in **pom.xml**:
+            ```
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-jasper</artifactId>
+                <scope>provided</scope>
+            </dependency>
+            ```
+        - Now the api to render HelloFromJsp.jsp is:
+            ```
+            @RequestMapping("hello-html-jsp")
+            public String sayHelloFromJSP() {
+                return "HelloFromJsp";
+            }
+            ```
+            ![Html from JSP](image-46.png)
     
 
 
