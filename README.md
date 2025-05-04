@@ -1768,6 +1768,74 @@
             }
             ```
             ![Html from JSP](image-46.png)
+    - ###### Capturing QueryParams using RequestParam and First Look at Model:
+        - Let's say that url is **http://localhost:5000/login?user=govind**. And View should be like **HelloFromJsp to govind**.
+        - In general **@RequestParam** is used to get params.
+        - Now to pass that param to JSP, we have ModelMap annotation.
+        - In JSP files, we can access them using **${}**
+        - LoginController.java:
+            ```	@RequestMapping("home")
+                public String authenticate(@RequestParam String user, ModelMap model) {
+                    model.put("user", user);
+                    return "HomePage";
+                }
+            ```
+        - model.put is used to register key and value which can be used across the views.
+        - HomePage.jsx:
+            ```
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Home Page</title>
+            </head>
+            <body>
+                <h2>Welcome to ${user}</h2>
+            </body>
+            </html>
+            ```
+        ![Home View](image-47.png)
+    - ###### Importance of Logging with Spring Boot:
+        - In **application.properties**, **logging.level.org.springframework=debug** is used by springframework to log at project level. Also at package level also, we can do logging. Example now project package is **com.gomad.firstwebapp**, now in application.properties **logging.level.com.gomad.firstwebapp=info**. Now using LoggingFactory 
+        -   logging.level.com.gomad.firstwebapp=debug
+            ```
+            2025-05-04T19:09:14.136+05:30  INFO 21092 --- [firstwebapp] [nio-5000-exec-1] c.g.f.login.controller.LoginController   : Info log @RequestParam is govind
+            2025-05-04T19:09:14.136+05:30 DEBUG 21092 --- [firstwebapp] [nio-5000-exec-1] c.g.f.login.controller.LoginController   : Debug log @RequestParam is govind
+            ```
+        -   logging.level.com.gomad.firstwebapp=info
+            ```
+            2025-05-04T19:09:14.136+05:30  INFO 21092 --- [firstwebapp] [nio-5000-exec-1] c.g.f.login.controller.LoginController   : Info log @RequestParam is govind
+            ```
+        - **LoginController.java**
+            ```
+            package com.gomad.firstwebapp.login.controller;
+
+            import org.slf4j.Logger;
+            import org.slf4j.LoggerFactory;
+            import org.springframework.stereotype.Controller;
+            import org.springframework.ui.ModelMap;
+            import org.springframework.web.bind.annotation.RequestMapping;
+            import org.springframework.web.bind.annotation.RequestParam;
+
+            @Controller
+            public class LoginController {
+                
+                private Logger logger = LoggerFactory.getLogger(getClass());               
+                
+                @RequestMapping("home")
+                public String authenticate(@RequestParam String user, ModelMap model) {
+                    logger.info("Info log @RequestParam is {}", user);
+                    logger.debug("Debug log @RequestParam is {}", user);
+                    model.put("user", user);
+                    return "HomePage";
+                }
+            }
+            ```
+            - In logger.info("Info log @RequestParam is {}", user), **{}** is replaced by **user** variable.
+
+
+
     
 
 

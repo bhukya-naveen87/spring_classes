@@ -34,7 +34,6 @@ public class HelloController {
 	}
 	
 	@RequestMapping("hello-html-jsp")
-//	@ResponseBody
 	public String sayHelloFromJSP() {
 		return "HelloFromJsp";
 	}
