@@ -1630,6 +1630,62 @@
             Hibernate: select cj1_0.id,cj1_0.author,cj1_0.name from course cj1_0 where cj1_0.id=?
             Course [id=14, name=Learn React JPA, author=Gomad]
             ```
+    - ###### Getting Started with Spring Data JPA:
+        - **CourseSpringDataJPA.java** is same as **CourseJPA.java**
+        - **CourseSpringDataJPARepo.java**:
+            ```
+            package com.gomad.jpa_and_hibernate.CourseSpringDataJPA;
+
+            import org.springframework.data.jpa.repository.JpaRepository;
+
+            public interface CourseSpringDataJPARepo extends JpaRepository<CourseSpringDataJPA, Long> {
+            
+            }
+            ```
+        - Repo class extends **JpaRepository** and for this Course class is given, and primary key datatype has to be given.
+        - **CourseCommandLineInterface.java**:
+            ```
+            courseSpringDataJPARepo.save(new CourseSpringDataJPA(21, "Learn AWS Spring Data JPA", "Gomad"));
+            courseSpringDataJPARepo.save(new CourseSpringDataJPA(22, "Learn AZURE Spring Data JPA", "Gomad"));
+            courseSpringDataJPARepo.save(new CourseSpringDataJPA(23, "Learn GCP Spring Data JPA", "Gomad"));
+            courseSpringDataJPARepo.save(new CourseSpringDataJPA(24, "Learn React Spring Data JPA", "Gomad"));
+            courseSpringDataJPARepo.deleteById(23l);
+            System.out.println(courseSpringDataJPARepo.findById(22l));
+            System.out.println(courseSpringDataJPARepo.findById(24l));
+            ```
+        - This is also same like **JPA** only but we don't need to create methods to query the data.
+        - We can add custom methods also but we have to follow some naming convention. Here in course table, column names are id, name and author. By default jpa serves findById, now I can create custom queries like **findByName** and **findByAuthor**
+            ```
+            package com.gomad.jpa_and_hibernate.CourseSpringDataJPA;
+
+            import java.util.List;
+
+            import org.springframework.data.jpa.repository.JpaRepository;
+
+            public interface CourseSpringDataJPARepo extends JpaRepository<CourseSpringDataJPA, Long> {
+
+                //Custom methods
+                List<CourseSpringDataJPA> findByName(String name);
+                List<CourseSpringDataJPA> findByAuthor(String author);
+            }
+            ```
+    - ###### Understanding difference between Hibernate and JPA:
+        - JPA defines the specification. It is an API.
+            - How do you define entities?
+            - How do you map attributes?
+            - Who manages the entities?
+        - Hibernate is one of the popular implementations of JPA
+        - Using Hibernate directly would result in a lock in to Hibernate.
+        - There are other JPA implementations (Toplink, for example)
+
+- ##### Build Java Web Application with Spring Framework, Spring Boot and Hibernate:
+    - ###### Creating Spring Boot Web Application with Spring Initializr:
+        - Created a project named **firstwebapp** with dependencies:
+            - Spring Web:
+                - Build web, including RESTful, applications using Spring MVC. Uses Apache Tomcat as the default embedded container.
+            - Spring Boot DevTools:
+                - Provides fast application restarts, LiveReload, and configurations for enhanced development experience.
+    
 
 
 
